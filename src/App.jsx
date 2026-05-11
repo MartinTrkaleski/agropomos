@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import "./App.css";
 
 function App() {
-  const [message, setMessage] = useState("");
+  const [backendStatus, setBackendStatus] = useState("");
   const [symptoms, setSymptoms] = useState("");
   const [result, setResult] = useState(null);
   const [error, setError] = useState("");
@@ -10,12 +10,12 @@ function App() {
   useEffect(() => {
     fetch("http://localhost:5000/")
       .then((res) => res.json())
-      .then((data) => {
-        setMessage(data.message);
+      .then(() => {
+        setBackendStatus("Системот е успешно поврзан.");
       })
       .catch((err) => {
         console.error(err);
-        setError("Ne moze da se povrze so backend.");
+        setError("Не може да се поврзе со серверот.");
       });
   }, []);
 
@@ -24,7 +24,7 @@ function App() {
     setResult(null);
 
     if (!symptoms.trim()) {
-      setError("Vnesi simptomi prvo.");
+      setError("Внеси симптоми пред да направиш дијагноза.");
       return;
     }
 
@@ -40,39 +40,43 @@ function App() {
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.error || "Nastana greska.");
+        setError(data.error || "Настана грешка при обработката.");
         return;
       }
 
       setResult(data);
     } catch (err) {
       console.error(err);
-      setError("Greska pri prakjanje do backend.");
+      setError("Грешка при испраќање на податоците до серверот.");
     }
   };
 
   return (
     <div className="app">
       <div className="card">
-        <div className="badge">AgroPomosh AI</div>
+        <div className="badge">Агро Помош AI</div>
 
-        <h1>{message}</h1>
+        <h1>Агро Помош</h1>
+
+        {backendStatus && (
+          <p className="status">{backendStatus}</p>
+        )}
 
         <p className="subtitle">
-          Vnesi simptomi od rastenieto i dobii brza preporaka.
+          Внеси симптоми од растението и добиј брза препорака за можната болест.
         </p>
 
         <div className="form">
-          <label>Simptomi</label>
+          <label>Симптоми</label>
 
           <textarea
-            placeholder="Primer: yellow leaves, dry spots, brown dots..."
+            placeholder="Пример: жолти листови, суви дамки, кафени точки, бели наслаги..."
             value={symptoms}
             onChange={(e) => setSymptoms(e.target.value)}
           />
 
           <button onClick={handleDiagnosis}>
-            Napravi dijagnoza
+            Направи дијагноза
           </button>
         </div>
 
@@ -80,20 +84,20 @@ function App() {
 
         {result && (
           <div className="result">
-            <h2>Rezultat 🌿</h2>
+            <h2>Резултат 🌿</h2>
 
             <div className="result-item">
-              <span>Bolest</span>
+              <span>Болест</span>
               <strong>{result.disease}</strong>
             </div>
 
             <div className="result-item">
-              <span>Sigurnost</span>
+              <span>Сигурност</span>
               <strong>{result.confidence}</strong>
             </div>
 
             <div className="result-item">
-              <span>Preporaka</span>
+              <span>Препорака</span>
               <strong>{result.recommendation}</strong>
             </div>
           </div>

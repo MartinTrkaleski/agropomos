@@ -169,3 +169,10 @@ button:active {
     text-align: left;
   }
 }
+
+.status {
+  color: #86efac;
+  font-size: 15px;
+  margin-top: 12px;
+  margin-bottom: 0;
+}
